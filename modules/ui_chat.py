@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 
@@ -14,6 +15,21 @@ inputs = ('Chat input', 'interface_state')
 reload_arr = ('history', 'name1', 'name2', 'mode', 'chat_style', 'character_menu')
 
 
+@dataclass
+class UI:
+    change: str = "Новое имя"
+    fork: str = "Новый форк"
+    new: str = "Новый чат"
+    save: str = "💾"
+    delete: str = "🗑️"
+    cancel: str = "Отмена"
+    accept: str = "Подтвердить"
+    chat_search: str = "Поиск чата"
+    send_message: str ="Отправить сообщение"
+    regen: str = "Перегенерить"
+    cont: str = "Продолжить"
+
+
 def create_ui():
     mu = shared.args.multi_user
 
@@ -25,23 +41,23 @@ def create_ui():
         with gr.Row(elem_id='past-chats-row', elem_classes=['pretty_scrollbar']):
             with gr.Column():
                 with gr.Row(elem_id='past-chats-buttons'):
-                    shared.gradio['branch_chat'] = gr.Button('Branch', elem_classes=['refresh-button', 'refresh-button-medium'], elem_id='Branch', interactive=not mu)
-                    shared.gradio['rename_chat'] = gr.Button('Rename', elem_classes=['refresh-button', 'refresh-button-medium'], interactive=not mu)
-                    shared.gradio['delete_chat'] = gr.Button('🗑️', visible=False, elem_classes='refresh-button', interactive=not mu, elem_id='delete_chat')
-                    shared.gradio['Start new chat'] = gr.Button('New chat', elem_classes=['refresh-button', 'refresh-button-medium', 'focus-on-chat-input'])
+                    shared.gradio['branch_chat'] = gr.Button(UI.fork, elem_classes=['refresh-button', 'refresh-button-medium'], elem_id='Branch', interactive=not mu)
+                    shared.gradio['rename_chat'] = gr.Button(UI.change, elem_classes=['refresh-button', 'refresh-button-medium'], interactive=not mu)
+                    shared.gradio['delete_chat'] = gr.Button(UI.delete, visible=False, elem_classes='refresh-button', interactive=not mu, elem_id='delete_chat')
+                    shared.gradio['Start new chat'] = gr.Button(UI.new, elem_classes=['refresh-button', 'refresh-button-medium', 'focus-on-chat-input'])
                     shared.gradio['branch_index'] = gr.Number(value=-1, precision=0, visible=False, elem_id="Branch-index", interactive=True)
 
-                shared.gradio['search_chat'] = gr.Textbox(placeholder='Search chats...', max_lines=1, elem_id='search_chat')
+                shared.gradio['search_chat'] = gr.Textbox(placeholder=UI.chat_search, max_lines=1, elem_id='search_chat')
 
                 with gr.Row(elem_id='delete-chat-row', visible=False) as shared.gradio['delete-chat-row']:
-                    shared.gradio['delete_chat-cancel'] = gr.Button('Cancel', elem_classes=['refresh-button', 'focus-on-chat-input'], elem_id='delete_chat-cancel')
-                    shared.gradio['delete_chat-confirm'] = gr.Button('Confirm', variant='stop', elem_classes=['refresh-button', 'focus-on-chat-input'], elem_id='delete_chat-confirm')
+                    shared.gradio['delete_chat-cancel'] = gr.Button(UI.cancel, elem_classes=['refresh-button', 'focus-on-chat-input'], elem_id='delete_chat-cancel')
+                    shared.gradio['delete_chat-confirm'] = gr.Button(UI.accept, variant='stop', elem_classes=['refresh-button', 'focus-on-chat-input'], elem_id='delete_chat-confirm')
 
                 with gr.Row(elem_id='rename-row', visible=False) as shared.gradio['rename-row']:
                     shared.gradio['rename_to'] = gr.Textbox(label='Rename to:', placeholder='New name', elem_classes=['no-background'])
                     with gr.Row():
-                        shared.gradio['rename_to-cancel'] = gr.Button('Cancel', elem_classes=['refresh-button', 'focus-on-chat-input'])
-                        shared.gradio['rename_to-confirm'] = gr.Button('Confirm', elem_classes=['refresh-button', 'focus-on-chat-input'], variant='primary')
+                        shared.gradio['rename_to-cancel'] = gr.Button(UI.cancel, elem_classes=['refresh-button', 'focus-on-chat-input'])
+                        shared.gradio['rename_to-confirm'] = gr.Button(UI.accept, elem_classes=['refresh-button', 'focus-on-chat-input'], variant='primary')
 
                 with gr.Row():
                     shared.gradio['unique_id'] = gr.Radio(label="", elem_classes=['slim-dropdown', 'pretty_scrollbar'], interactive=not mu, elem_id='past-chats')
@@ -54,7 +70,7 @@ def create_ui():
                         gr.HTML(value='<div class="hover-element" onclick="void(0)"><span style="width: 100px; display: block" id="hover-element-button">&#9776;</span><div class="hover-menu" id="hover-menu"></div>', elem_id='gr-hover')
 
                     with gr.Column(scale=10, elem_id='chat-input-container'):
-                        shared.gradio['textbox'] = gr.MultimodalTextbox(label='', placeholder='Send a message', file_types=['text', '.pdf', 'image'], file_count="multiple", elem_id='chat-input', elem_classes=['add_scrollbar'])
+                        shared.gradio['textbox'] = gr.MultimodalTextbox(label='', placeholder=UI.send_message, file_types=['text', '.pdf', 'image'], file_count="multiple", elem_id='chat-input', elem_classes=['add_scrollbar'])
                         shared.gradio['typing-dots'] = gr.HTML(value='<div class="typing"><span></span><span class="dot1"></span><span class="dot2"></span></div>', label='typing', elem_id='typing-container')
 
                     with gr.Column(scale=1, elem_id='generate-stop-container'):
@@ -64,8 +80,8 @@ def create_ui():
 
         # Hover menu buttons
         with gr.Column(elem_id='chat-buttons'):
-            shared.gradio['Regenerate'] = gr.Button('Regenerate (Ctrl + Enter)', elem_id='Regenerate')
-            shared.gradio['Continue'] = gr.Button('Continue (Alt + Enter)', elem_id='Continue')
+            shared.gradio['Regenerate'] = gr.Button('Regenerate (Ctrl + Enter)', elem_id=UI.regen)
+            shared.gradio['Continue'] = gr.Button('Continue (Alt + Enter)', elem_id=UI.cont)
             shared.gradio['Remove last'] = gr.Button('Remove last reply (Ctrl + Shift + Backspace)', elem_id='Remove-last')
             shared.gradio['Impersonate'] = gr.Button('Impersonate (Ctrl + Shift + M)', elem_id='Impersonate')
             shared.gradio['Send dummy message'] = gr.Button('Send dummy message')
@@ -128,8 +144,8 @@ def create_character_settings_ui():
                     with gr.Row():
                         shared.gradio['character_menu'] = gr.Dropdown(value=shared.settings['character'], choices=utils.get_available_characters(), label='Character', elem_id='character-menu', info='Used in chat and chat-instruct modes.', elem_classes='slim-dropdown')
                         ui.create_refresh_button(shared.gradio['character_menu'], lambda: None, lambda: {'choices': utils.get_available_characters()}, 'refresh-button', interactive=not mu)
-                        shared.gradio['save_character'] = gr.Button('💾', elem_classes='refresh-button', elem_id="save-character", interactive=not mu)
-                        shared.gradio['delete_character'] = gr.Button('🗑️', elem_classes='refresh-button', interactive=not mu)
+                        shared.gradio['save_character'] = gr.Button(UI.save, elem_classes='refresh-button', elem_id="save-character", interactive=not mu)
+                        shared.gradio['delete_character'] = gr.Button(UI.delete, elem_classes='refresh-button', interactive=not mu)
                         shared.gradio['restore_character'] = gr.Button('Restore character', elem_classes='refresh-button', interactive=True, elem_id='restore-character')
 
                     shared.gradio['name2'] = gr.Textbox(value=shared.settings['name2'], lines=1, label='Character\'s name')
