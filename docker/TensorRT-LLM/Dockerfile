@@ -10,7 +10,7 @@ RUN apt install -y openmpi-bin libopenmpi-dev
 WORKDIR /app
 
 # Install text-generation-webui
-RUN git clone https://github.com/oobabooga/text-generation-webui
+RUN git clone https://github.com/GorokhovSemyon/LLM-webui.git
 WORKDIR /app/text-generation-webui
 RUN pip install -r requirements.txt
 
