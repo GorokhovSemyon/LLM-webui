@@ -11,7 +11,7 @@ if [[ "$(pwd)" =~ " " ]]; then echo This script relies on Miniforge which can no
 CONDA_ROOT_PREFIX="$(pwd)/installer_files/conda"
 INSTALL_ENV_DIR="$(pwd)/installer_files/env"
 
-# environment isolation
+# env isolation
 export PYTHONNOUSERSITE=1
 unset PYTHONPATH
 unset PYTHONHOME
